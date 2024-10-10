@@ -56,3 +56,68 @@ drug_use_html %>%
   first()
 ```
 
+There is an issue with the data we imported; first row (there is this NOTE)
+Slice function allows to select rows by number
+
+```{r}
+marj_use_df = 
+drug_use_html %>% 
+  html_table() %>% 
+  first() %>% 
+  slice(-1)
+```
+
+Learning assessment:
+
+```{r}
+nyc_cost_df = 
+  read_html("https://www.bestplaces.net/cost_of_living/city/new_york/new_york") %>% 
+  html_table(header = TRUE) %>% 
+  first()
+```
+
+First row is the header so need to change that with (header = TRUE)
+
+If there are multiple tables how to tell it which you want? (first function takes the first table, nth function from ?first can tell you the nth of the list)
+
+Want to create a dataframe with movie time, how long it is, and metascore of starwars movies (table in the html that is not in a table that we want it into a dataframe)
+Here CSS selector will help to recognise what we want on the page 
+
+Import all the html, then extract the elements that we want
+
+```{r}
+swm_url = "https://www.imdb.com/list/ls070150896/"
+
+swm_html = read_html(swm_url)
+```
+
+html element needs to define CSS
+
+```{r}
+swm_url = "https://www.imdb.com/list/ls070150896/"
+
+swm_html = read_html(swm_url)
+
+title_vec = 
+  swm_html |>
+  html_elements(".ipc-title-link-wrapper .ipc-title__text") |>
+  html_text()
+
+metascore_vec = 
+  swm_html |>
+  html_elements(".metacritic-score-box") |>
+  html_text()
+
+runtime_vec = 
+  swm_html |>
+  html_elements(".dli-title-metadata-item:nth-child(2)") |>
+  html_text()
+
+swm_df = 
+  tibble(
+    title = title_vec,
+    score = metascore_vec,
+    runtime = runtime_vec)
+
+```
+
