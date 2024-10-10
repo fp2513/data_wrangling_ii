@@ -352,6 +352,8 @@ If there are multiple tables how to tell it which you want? (first
 function takes the first table, nth function from ?first can tell you
 the nth of the list)
 
+## CSS selector
+
 Want to create a dataframe with movie time, how long it is, and
 metascore of starwars movies (table in the html that is not in a table
 that we want it into a dataframe) Here CSS selector will help to
@@ -373,18 +375,18 @@ swm_url = "https://www.imdb.com/list/ls070150896/"
 swm_html = read_html(swm_url)
 
 title_vec = 
-  swm_html |>
-  html_elements(".ipc-title-link-wrapper .ipc-title__text") |>
+  swm_html %>% 
+  html_elements(".ipc-title-link-wrapper .ipc-title__text") %>% 
   html_text()
 
 metascore_vec = 
-  swm_html |>
-  html_elements(".metacritic-score-box") |>
+  swm_html %>% 
+  html_elements(".metacritic-score-box") %>% 
   html_text()
 
 runtime_vec = 
-  swm_html |>
-  html_elements(".dli-title-metadata-item:nth-child(2)") |>
+  swm_html %>% 
+  html_elements(".dli-title-metadata-item:nth-child(2)") %>% 
   html_text()
 
 swm_df = 
@@ -393,3 +395,66 @@ swm_df =
     score = metascore_vec,
     runtime = runtime_vec)
 ```
+
+Careful that reading the html once, so then just doing ‘swm_html %\>%’.
+Each time read_html you are reloading and visiting the page, there are
+sometimes issues with over-visiting a page
+
+CSS tags are unstable if the html changes (since it is a unique tag)
+
+## Using API to get data from web
+
+Someone has set up a sever and can send request to server and they will
+send it back to me (csv format)
+
+(to actions, API, CSV format, and copy the API format)
+
+``` r
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content()
+```
+
+    ## Rows: 45 Columns: 4
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## dbl (4): year, new_york_city_population, nyc_consumption_million_gallons_per...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+GET function is a common API call to get the data
+
+content() gives you just the content of the table (wihtout content ()
+command will also get excess information of the data; content type, size
+1.47kB)
+
+``` r
+brfss_smart2010 = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv", 
+      query = list ("$limit" = 5000)) %>% 
+  content()
+```
+
+    ## Rows: 45 Columns: 4
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## dbl (4): year, new_york_city_population, nyc_consumption_million_gallons_per...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+The query is for this specific API this is how they are telling us to
+exveed 1000 rows of the data, how we make request is API specific
+
+Pokemon API
+
+``` r
+pokemon =
+  GET("https://pokeapi.co/api/v2/pokemon/ditto") %>% 
+  content()
+```
+
+Sometimes the data that comes out of the API is not very clean (datasets
+that are more complicated, importing data but need to convert it to the
+dataframe that we need it to be)
