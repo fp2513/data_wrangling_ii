@@ -183,3 +183,34 @@ str_detect(string_vec, "\\[")
 ```
 
     ## [1]  TRUE FALSE  TRUE  TRUE
+
+# Factors
+
+Emphasis numeric structures is want to convert to a numeric variable
+
+``` r
+sex_vec = factor(c("male", "male", "female", "female"))
+
+as.numeric(sex_vec)
+```
+
+    ## [1] 2 2 1 1
+
+See that there are levels
+
+See that we get 2 2 1 1 out since it starts at alphabetical female level
+first
+
+Now change the underlying structure, so that male comes first.
+Releveling
+
+``` r
+sex_vec = fct_relevel(sex_vec, "male")
+
+as.numeric(sex_vec)
+```
+
+    ## [1] 1 1 2 2
+
+Can find all lots of things to do in the “str\_” package can search in
+console str\_ fct\_ package also to see what i can do with factors
